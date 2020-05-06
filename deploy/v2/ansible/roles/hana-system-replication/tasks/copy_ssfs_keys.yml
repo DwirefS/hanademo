@@ -17,29 +17,24 @@
       register: primary_key_file_result
       failed_when: primary_key_file_result.failed
 
-    - name: Ensure the Primary node XSA SSFS_{{ sid | upper }}.DAT file exists
-      when: ansible_hostname == hana_database.nodes[0].dbname
-      stat:
-        path: "{{ path_xsa_ssfs_dat }}"
-      register: primary_xsa_dat_file_result
-      failed_when: false
+- name: Ensure the Primary node XSA SSFS_{{ sid | upper }}.DAT file exists
+  stat:
+    path: "{{ path_xsa_ssfs_dat }}"
+  register: primary_xsa_dat_file_result
+  failed_when: false
 
-    - name: Ensure the Primary node XSA SSFS_{{ sid | upper }}.KEY file exists
-      stat:
-        path: "{{ path_xsa_ssfs_key }}"
-      register: primary_xsa_key_file_result
-      failed_when: false
+- name: Ensure the Primary node XSA SSFS_{{ sid | upper }}.KEY file exists
+  stat:
+    path: "{{ path_xsa_ssfs_key }}"
+  register: primary_xsa_key_file_result
+  failed_when: false
 
-    - name: Ensure XSA install fact set
-      set_fact:
-        xsa_installed: primary_xsa_dat_file_result.stat.isreg and primary_xsa_key_file_result.stat.isreg
-        # Note. Both files need to be present to confirm xsa has been installed.
-        # If both files are missing, we skip the xsa file copy tasks.
-        # If only one file is present, the copy tasks will fail, which is sensible.
-
-- name: Ensure global XSA install fact is set
+- name: Ensure XSA install fact set
   set_fact:
-    xsa_installed: xsa_installed is defined and xsa_installed
+    xsa_installed: "{{ (primary_xsa_dat_file_result.stat.exists and primary_xsa_key_file_result.stat.exists) | bool }}"
+    # Note. Both files need to be present to confirm xsa has been installed.
+    # If both files are missing, we skip the xsa file copy tasks.
+    # If only one file is present, the copy tasks will fail, which is sensible.
 
 - name: Ensure key files are in place
   # If HSR is already enabled, we don't need to do this
