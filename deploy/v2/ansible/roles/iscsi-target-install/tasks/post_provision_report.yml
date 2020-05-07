@@ -1,0 +1,6 @@
+---
+
+- name: Check if iSCSI is set up correctly
+  shell: >
+    targetcli ls
+  register: device_info

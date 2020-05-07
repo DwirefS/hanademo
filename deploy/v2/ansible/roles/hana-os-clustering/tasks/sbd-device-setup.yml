@@ -1,0 +1,130 @@
+---
+
+- name: Enable iscsid, iscsi, sbd
+  service: name="{{ item }}" enabled=yes
+  loops: "{{ iscsi_sbd_services | flattern(levels=1) }}"
+
+- name: Set initiatorname
+  lineinfile:
+    dest: '/etc/iscsi/initiatorname.iscsi'
+    regexp: '^InitiatorName=iqn'
+    line: "InitiatorName={{ iscsi_object }}.{{ hostname }}.local:{{ hostname }}"
+    state: 'present'
+  register: iscsi_register_initiator_name
+
+- name: Restart iscsid
+  service: name=iscsid state=restarted
+  when: iscsi_register_initiator_name.changed
+
+- name: Restart iscsi
+  service: name=iscsi state=restarted
+  when: iscsi_register_initiator_name.changed
+
+# Connect the iSCSI devices
+- name: Connect the iSCSI devices
+  loop: "{{ groups['iscsi'] }}" 
+  block:
+
+    - name: Discover targets on portal {{ item.ip }}
+      open_iscsi:
+        discover: yes
+        portal: "{{ item.ip }}"
+        port: "{{ iscsi_port }}"
+      register: discover_iscsi_device
+
+    - debug:
+        msg: "{{ discover_iscsi_device }}"
+      when: discover_iscsi_device
+
+    - name: Set connecting to the portal
+      open_iscsi:
+        target: "{{ iscsi_object }}.db{{ cluster_name }}.local:db{{ cluster_name }}"
+        login: yes
+        portal: "{{ item.ip }}"
+        port: "{{ iscsi_port }}"
+      register: login_iscsi_device
+
+    - debug:
+        msg: "{{ login_iscsi_device }}"
+      when: login_iscsi_device
+
+    - name: Set automatic connecting at startup
+      open_iscsi:
+        auto_node_startup: yes
+        portal: "{{ item }}"
+        port: "{{ iscsi_port }}"
+      register: set_update_iscsi_device
+
+    - debug:
+        msg: "{{ set_update_iscsi_device }}"
+      when: set_update_iscsi_device
+
+- name: Call lsscsi and get location
+  shell: lsscsi -l | grep {{ cluster_name }} | awk '{ print $6; }' | grep -oP "^/dev/\K.*"
+  register: lsscsi_output
+
+- debug:
+    msg: "{{ lsscsi_output }}"
+  when: lsscsi_output
+
+- name: Configure SBD device
+  set_fact:
+    sbd_devices: ""
+  loop: {{ lsscsi_output.stdout }}
+  block:
+
+    - name: Get disk with correct disk-id
+      shell: ls -l /dev/disk/by-id/scsi-* | grep {{ item }} | grep scsi-3 | awk '{ print $9; }'
+      register: scsi_disk_path
+
+    - debug:
+        msg: "{{ scsi_disk_path }}"
+      when: scsi_disk_path
+
+    - sbd_devices: "{{ sbd_devices }};{{ scsi_disk_path }}"
+      when:
+        scsi_disk_path is not failed
+
+# what does these numbers mean?
+    - name: Create corosync sbd device
+      command: sbd -d {{ scsi_disk_path.stdout }} -1 60 -4 120 create
+
+- name: Adapt the SBD config to have device
+  lineinfile:
+    dest: '/etc/sysconfig/sbd'
+    regexp: 'SBD_DEVICE='
+    line: "SBD_DEVICE=\"{{ sbd_devices }}\""
+    state: 'present'
+  register: device_added
+
+- name: Adapt the SBD config to have pacemaker enabled
+  lineinfile:
+    dest: '/etc/sysconfig/sbd'
+    regexp: 'SBD_PACEMAKER='
+    line: "SBD_PACEMAKER=yes"
+    state: 'present'
+  register: pacemaker_enabled
+
+- name: Adapt the SBD config to have SDB startmode set to always
+  lineinfile:
+    dest: '/etc/sysconfig/sbd'
+    regexp: 'SBD_STARTMODE='
+    line: "SBD_STARTMODE=always"
+    state: 'present'
+  register: startmode_set
+  
+- name: Create softdog config
+  shell: echo softdog | sudo tee /etc/modules-load.d/softdog.conf
+  register: softdog_config
+
+- debug:
+    msg: "{{ softdog_config }}"
+  when: softdog_config
+
+- name: Load the softdog module
+  shell: modprobe -v softdog
+  register: load_softdog
+
+- debug:
+    msg: "{{ load_softdog }}"
+  when: load_softdog

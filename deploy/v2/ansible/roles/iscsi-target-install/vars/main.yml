@@ -1,0 +1,5 @@
+---
+
+cluster_type: "db"
+
+cluster_name: "{{ cluster_type }}{{ hana_database.instance.sid }}"

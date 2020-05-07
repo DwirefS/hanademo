@@ -1,0 +1,39 @@
+---
+
+- name: Update SLES
+  zypper:
+    name: '*'
+    state: latest
+    disable_recommends: no
+
+- name: Remove packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ uninstall_packages | flatten(levels=1) }}"
+
+- name: Install packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ install_packages | flatten(levels=1) }}"
+
+- name: Enable the iSCSI target service
+  service: name=targetcli enabled=yes state=started
+
+- name: Create iSCSI device on iSCSI target server
+  block:
+
+    - name: Create the root folder for all SBD devices
+      file: 
+        path: /sbd
+        state: directory
+
+    - name: Create the SBD device for the {{ cluster_type }} cluster of SAP System
+      shell: >
+        targetcli backstores/fileio create sbd{{ cluster_name }} /sbd/sbd{{ cluster_name }} 50M write_back=false;
+        targetcli iscsi/ create {{ iscsi_object }}.{{ cluster_name }}.local:{{ cluster_name }};
+        targetcli iscsi/{{ iscsi_object }}.{{ cluster_name }}.local:{{ cluster_name }}/tpg1/luns/ create /backstores/fileio/sbd{{ cluster_name }};
+        targetcli iscsi/{{ iscsi_object }}.{{ cluster_name }}.local:{{ cluster_name }}/tpg1/acls/ create {{ iscsi_object }}.{{ hana_database.nodes[0].dbname }}.local:{{ hana_database.nodes[0].dbname }};
+        targetcli iscsi/{{ iscsi_object }}.{{ cluster_name }}.local:{{ cluster_name }}/tpg1/acls/ create {{ iscsi_object }}.{{ hana_database.nodes[1].dbname }}.local:{{ hana_database.nodes[1].dbname }};
+        targetcli saveconfig
