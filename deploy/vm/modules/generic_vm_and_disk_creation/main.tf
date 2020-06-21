@@ -73,11 +73,13 @@ resource "azurerm_virtual_machine" "vm" {
   os_profile {
     computer_name  = var.machine_name
     admin_username = var.vm_user
+    #admin_password = "Password1234!"
   }
 
   os_profile_linux_config {
+    #disable_password_authentication = false
     disable_password_authentication = true
-
+  
     ssh_keys {
       path     = "/home/${var.vm_user}/.ssh/authorized_keys"
       key_data = file(var.sshkey_path_public)
