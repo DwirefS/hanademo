@@ -27,6 +27,7 @@ resource "azurerm_managed_disk" "disk" {
   name                 = "${var.machine_name}-disk${count.index}"
   location             = var.az_region
   storage_account_type = "Premium_LRS"
+  #storage_account_type = "Ultra_SSD"
   resource_group_name  = var.az_resource_group
   disk_size_gb         = var.storage_disk_sizes_gb[count.index]
   create_option        = "Empty"
@@ -39,6 +40,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "disk" {
   managed_disk_id    = element(azurerm_managed_disk.disk.*.id, count.index)
   lun                = count.index
   caching            = "ReadWrite"
+  #write_accelerator_enabled = "true"
 }
 
 # Create virtual machine
@@ -58,10 +60,13 @@ resource "azurerm_virtual_machine" "vm" {
     managed_disk_type = "Premium_LRS"
   }
 
+  #additional_capabilities {
+  #  ultra_ssd_enabled = "true"
+  #}
   storage_image_reference {
-    publisher = "SUSE"
-    offer     = "sles-sap-12-sp5"
-    sku       = "gen1"
+    publisher = "suse"
+    offer     = "sles-sap-15-sp1"
+    sku       = "gen2"
     version   = "latest"
   }
 
