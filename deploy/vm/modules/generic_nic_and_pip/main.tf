@@ -20,6 +20,7 @@ resource "azurerm_network_interface" "nic" {
   location                  = var.az_region
   resource_group_name       = var.az_resource_group
   network_security_group_id = var.nsg_id
+  enable_accelerated_networking = "true"
 
   ip_configuration {
     name      = "${var.name}-nic-configuration"
