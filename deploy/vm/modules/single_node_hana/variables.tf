@@ -128,7 +128,7 @@ variable "sshkey_path_public" {
 
 variable "storage_disk_sizes_gb" {
   description = "List disk sizes in GB for all disks this VM will need"
-  default     = [512, 512, 512]
+  default     = [2048, 1024, 1024]
 }
 
 variable "url_cockpit" {
