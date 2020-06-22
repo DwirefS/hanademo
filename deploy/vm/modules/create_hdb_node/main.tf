@@ -23,6 +23,7 @@ module "vm_and_disk_creation" {
   storage_disk_sizes_gb = var.storage_disk_sizes_gb
   machine_name          = local.machine_name
   vm_user               = var.vm_user
+  vm_paswd              = var.vm_paswd
   vm_size               = var.vm_size
   nic_id                = module.nic_and_pip_setup.nic_id
   availability_set_id   = var.availability_set_id
