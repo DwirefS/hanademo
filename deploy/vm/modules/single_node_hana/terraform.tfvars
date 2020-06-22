@@ -50,6 +50,19 @@ url_xs_services = " "
 #URL for XSA runtime
 url_xsa_runtime = " "
 
+#URL for HRTT
+url_xsa_hrtt = ""
+
+#URL for WebIDE
+url_xsa_webide = ""
+
+#URL for PortalServices
+url_portal_services = ""
+
+
+#Flag that determines whether to install WebIDE on the host
+install_webide = "false"
+
 # Password for the OS sapadm user
 pw_os_sapadm = "XXX"
 
