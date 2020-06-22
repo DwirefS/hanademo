@@ -9,7 +9,7 @@ az_domain_name = "hanaonazure"
 
 # Size of the VM to be deployed (example: "Standard_E8s_v3")
 # For HANA platform edition, a minimum of 32 GB of RAM is recommended
-vm_size = "Standard_E8s_v3" # Standard_M64s
+vm_size = "Standard_E32s_v3" # Standard_M64s
 
 # Path to the public SSH key to be used for authentication (e.g. "~/.ssh/id_rsa.pub")
 sshkey_path_public = "~/.ssh/id_rsa.pub"
@@ -24,7 +24,7 @@ vm_user = "demo"
 vm_paswd = " "
 
 # SAP system ID (SID) to be used for HANA installation (example: "HN1")
-sap_sid = "HND"
+sap_sid = "HDP"
 
 # SAP instance number to be used for HANA installation (example: "01")
 sap_instancenum = "01"
@@ -41,28 +41,6 @@ install_cockpit = "false"
 #Hana cockpit installer download link
 url_cockpit = " "
 
-#Flag that determines whether to install XSA on the host
-install_xsa = "true"
-
-#URL for XS Services
-url_xs_services = " "
-
-#URL for XSA runtime
-url_xsa_runtime = " "
-
-#URL for HRTT
-url_xsa_hrtt = ""
-
-#URL for WebIDE
-url_xsa_webide = ""
-
-#URL for PortalServices
-url_portal_services = ""
-
-
-#Flag that determines whether to install WebIDE on the host
-install_webide = "false"
-
 # Password for the OS sapadm user
 pw_os_sapadm = "XXX"
 
@@ -76,9 +54,6 @@ pw_db_system = "XXX"
 # Password for the DB SYSTEM user for the tenant DB (MDC installations only)
 pwd_db_tenant = "XXX"
 
-#Password for XSAADMIN user
-pwd_db_xsaadmin = "XXX"
-
 # Set this flag to true when installing HANA 2.0 (or false for HANA 1.0)
 useHana2 = "true"
 
@@ -91,3 +66,6 @@ bastion_username_windows = "bastion_user"
 pw_bastion_windows = ""
 url_hana_studio_windows = ""
 url_sapcar_windows = ""
+
+
+
