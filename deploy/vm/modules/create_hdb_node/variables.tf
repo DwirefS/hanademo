@@ -62,6 +62,10 @@ variable "vm_user" {
   description = "The username of your HANA database VM."
 }
 
+variable "vm_paswd" {
+  description = "The OS password of your VM."
+}
+
 locals {
   machine_name = "hanapocvm${var.hdb_num}"
   #machine_name = "${lower(var.sap_sid)}-hdb${var.hdb_num}"
