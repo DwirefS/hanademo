@@ -45,3 +45,6 @@ variable "vm_user" {
   description = "The username of your VM."
 }
 
+variable "vm_paswd" {
+  description = "The OS password of your VM."
+}
