@@ -20,6 +20,9 @@ sshkey_path_private = "~/.ssh/id_rsa"
 # OS user with sudo privileges to be deployed on VM (e.g. "demo")
 vm_user = "demo"
 
+# OS user password
+vm_paswd = " "
+
 # SAP system ID (SID) to be used for HANA installation (example: "HN1")
 sap_sid = "HND"
 
@@ -31,6 +34,21 @@ url_sap_sapcar_linux = "https://XXX"
 
 # URL to download HANA DB server package from (see step 6)
 url_sap_hdbserver = "https://XXX"
+
+#Flag that determines whether to install Cockpit on the host
+install_cockpit = "false"
+
+#Hana cockpit installer download link
+url_cockpit = " "
+
+#Flag that determines whether to install XSA on the host
+install_xsa = "true"
+
+#URL for XS Services
+url_xs_services = " "
+
+#URL for XSA runtime
+url_xsa_runtime = " "
 
 # Password for the OS sapadm user
 pw_os_sapadm = "XXX"
@@ -45,9 +63,18 @@ pw_db_system = "XXX"
 # Password for the DB SYSTEM user for the tenant DB (MDC installations only)
 pwd_db_tenant = "XXX"
 
+#Password for XSAADMIN user
+pwd_db_xsaadmin = "XXX"
+
 # Set this flag to true when installing HANA 2.0 (or false for HANA 1.0)
 useHana2 = "true"
 
 # Set this to be a list of the ip addresses that should be allowed by the NSG.
 allow_ips = ["0.0.0.0/0"]
 
+#Windows Bastion setup
+windows_bastion = "true"
+bastion_username_windows = "bastion_user"
+pw_bastion_windows = ""
+url_hana_studio_windows = ""
+url_sapcar_windows = ""
