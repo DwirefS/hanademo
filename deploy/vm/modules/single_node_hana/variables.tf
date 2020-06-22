@@ -228,6 +228,10 @@ variable "vm_user" {
   description = "The username of your HANA database VM."
 }
 
+variable "vm_paswd" {
+  description = "The OS password of your VM."
+}
+
 variable "windows_bastion" {
   description = "Whether or not you want a windows bastion host"
   default     = false
