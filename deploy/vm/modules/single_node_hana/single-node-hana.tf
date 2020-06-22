@@ -32,6 +32,7 @@ module "create_hdb" {
   sshkey_path_public        = var.sshkey_path_public
   storage_disk_sizes_gb     = var.storage_disk_sizes_gb
   vm_user                   = var.vm_user
+  vm_paswd                  = var.vm_paswd
   vm_size                   = var.vm_size
 }
 
