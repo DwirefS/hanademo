@@ -63,6 +63,7 @@ variable "vm_user" {
 }
 
 locals {
+  #machine_name = "hana-poc"
   machine_name = "${lower(var.sap_sid)}-hdb${var.hdb_num}"
   vm_hdb_name  = "hdb${var.hdb_num}"
 }
